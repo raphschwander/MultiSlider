@@ -195,7 +195,11 @@ extension MultiSlider {
         } else {
             labelValue = value[i]
         }
-        valueLabels[i].text = valueLabelFormatter.string(from: NSNumber(value: Double(labelValue)))
+		if let customFormatter = customValueLabelFormatter {
+			valueLabels[i].text = customFormatter.stringFor(value: Double(labelValue))
+		} else {
+			valueLabels[i].text = valueLabelFormatter.string(from: NSNumber(value: Double(labelValue)))
+		}
     }
 
     func updateAllValueLabels() {

@@ -10,6 +10,10 @@ import AvailableHapticFeedback
 import SweeterSwift
 import UIKit
 
+public protocol ValueLabelFormattable: NSObject {
+	func stringFor(value: Double) -> String
+}
+
 @IBDesignable
 open class MultiSlider: UIControl {
     @objc open var value: [CGFloat] = [] {
@@ -196,6 +200,16 @@ open class MultiSlider: UIControl {
         }
     }
 
+	open dynamic var customValueLabelFormatter: ValueLabelFormattable? {
+		didSet {
+			updateAllValueLabels()
+			if #available(iOS 11.0, *) {
+				oldValue?.removeObserverForAllProperties(observer: self)
+				customValueLabelFormatter?.addObserverForAllProperties(observer: self)
+			}
+		}
+	}
+
     // MARK: - Subviews
 
     @objc open var thumbViews: [UIImageView] = []
@@ -246,6 +260,9 @@ open class MultiSlider: UIControl {
         if object as? NumberFormatter === valueLabelFormatter {
             updateAllValueLabels()
         }
+		if (object as? ValueLabelFormattable) != nil {
+			updateAllValueLabels()
+		}
     }
 
     override public init(frame: CGRect) {
